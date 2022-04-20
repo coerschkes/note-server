@@ -36,11 +36,9 @@ func (r InMemoryNoteRepository) Add(note Note) error {
 }
 
 func (r InMemoryNoteRepository) DeleteById(id int64) error {
-
 	for i, note := range *r.notes {
 		if note.ID == id {
 			*r.notes = append((*r.notes)[:i], (*r.notes)[i+1:]...)
-
 			return nil
 		}
 	}

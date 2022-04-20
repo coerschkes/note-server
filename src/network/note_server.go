@@ -3,9 +3,9 @@ package network
 import "github.com/gin-gonic/gin"
 
 type NoteServer interface {
-	GetNotes(c *gin.Context)
-	GetNoteById(c *gin.Context)
-	PostNote(c *gin.Context)
-	DeleteNote(c *gin.Context)
 	Init()
+	GetNotes(c *gin.Context) error
+	GetNoteById(c *gin.Context) error
+	PostNote(c *gin.Context) error
+	DeleteNote(c *gin.Context) error
 }

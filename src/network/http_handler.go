@@ -17,52 +17,60 @@ func NewHttpHandler(repository note.NoteRepository) HttpHandler {
 }
 
 func (h HttpHandler) Init() {
-	router := gin.Default()
-	router.GET("/notes", h.GetNotes)
-	router.GET("/notes/:id", h.GetNoteById)
-	router.POST("/notes", h.PostNote)
-	router.DELETE("/notes/:id", h.DeleteNote)
+	router := gin.New()
+	router.Use(gin.Logger())
+	router.SetTrustedProxies([]string{"127.0.0.1"})
+	router.GET("/notes", errorHandler(h.GetNotes).handleHttp)
+	router.GET("/notes/:id", errorHandler(h.GetNoteById).handleHttp)
+	router.POST("/notes", errorHandler(h.PostNote).handleHttp)
+	router.DELETE("/notes/:id", errorHandler(h.DeleteNote).handleHttp)
 
 	router.Run("localhost:8080")
 }
 
-func (h HttpHandler) GetNotes(c *gin.Context) {
-	note, err := h.repository.GetAll()
-	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "error occurred"})
+func (h HttpHandler) GetNotes(c *gin.Context) error {
+	if note, err := h.repository.GetAll(); err != nil {
+		return err
 	} else {
 		c.IndentedJSON(http.StatusOK, note)
+		return nil
 	}
 }
 
-func (h HttpHandler) GetNoteById(c *gin.Context) {
+func (h HttpHandler) GetNoteById(c *gin.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	note, err := h.repository.GetById(int64(id))
+	if err != nil {
+		return err
+	}
 
-	if err == nil {
-		c.IndentedJSON(http.StatusOK, note)
-		return
+	if note, err := h.repository.GetById(int64(id)); err != nil {
+		return err
 	} else {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid or missing param 'id'"})
+		c.IndentedJSON(http.StatusOK, note)
+		return nil
 	}
 }
 
-func (h HttpHandler) PostNote(c *gin.Context) {
+func (h HttpHandler) PostNote(c *gin.Context) error {
 	var newNote note.Note
 
 	if err := c.BindJSON(&newNote); err != nil {
-		return
+		return err
 	}
 
-	h.repository.Add(newNote)
-	c.IndentedJSON(http.StatusCreated, newNote)
+	if err := h.repository.Add(newNote); err != nil {
+		return err
+	} else {
+		c.IndentedJSON(http.StatusCreated, newNote)
+		return nil
+	}
 }
 
-func (h HttpHandler) DeleteNote(c *gin.Context) {
+func (h HttpHandler) DeleteNote(c *gin.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-	err = h.repository.DeleteById(int64(id))
-
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid or missing param 'id'"})
+		return err
 	}
+
+	return h.repository.DeleteById(int64(id))
 }

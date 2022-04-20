@@ -8,6 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const trustedProxies = "127.0.0.1"
+
 type HttpHandler struct {
 	repository note.NoteRepository
 }
@@ -19,7 +21,7 @@ func NewHttpHandler(repository note.NoteRepository) HttpHandler {
 func (h HttpHandler) Init() {
 	router := gin.New()
 	router.Use(gin.Logger())
-	router.SetTrustedProxies([]string{"127.0.0.1"})
+	router.SetTrustedProxies([]string{trustedProxies})
 	router.GET("/notes", errorHandler(h.GetNotes).handleHttp)
 	router.GET("/notes/:id", errorHandler(h.GetNoteById).handleHttp)
 	router.POST("/notes", errorHandler(h.PostNote).handleHttp)

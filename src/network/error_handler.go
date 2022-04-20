@@ -1,15 +1,16 @@
 package network
 
 import (
-	"net/http"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
 
-type errorHandler func(c *gin.Context) error
+type errorHandler func(c *gin.Context) *ServerError
 
 func (fn errorHandler) handleHttp(c *gin.Context) {
 	if err := fn(c); err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "error occurred"})
+		fmt.Println(err.Message, err.Error)
+		c.IndentedJSON(err.Code, gin.H{"message": err.Message})
 	}
 }

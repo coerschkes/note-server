@@ -3,7 +3,6 @@ package api
 import (
 	"co/note-server/src/domain/model"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -41,12 +40,7 @@ func (h NoteController) GetNotes(c *gin.Context) *ServerError {
 
 func (h NoteController) GetNoteById(c *gin.Context) *ServerError {
 	paramId := c.Param("id")
-	id, err := strconv.Atoi(paramId)
-	if err != nil {
-		return NewServerError(err, "Unable to parse parameter 'id' from actual parameter '"+paramId+"'.", c.FullPath(), http.StatusBadRequest)
-	}
-
-	if note, err := h.repository.GetById(int64(id)); err != nil {
+	if note, err := h.repository.GetById(paramId); err != nil {
 		return NewServerError(err, "Unable to find note with id '"+paramId+"' from the repository.", c.FullPath(), http.StatusBadRequest)
 	} else {
 		c.IndentedJSON(http.StatusOK, note)
@@ -71,12 +65,7 @@ func (h NoteController) PostNote(c *gin.Context) *ServerError {
 
 func (h NoteController) DeleteNote(c *gin.Context) *ServerError {
 	paramId := c.Param("id")
-	id, err := strconv.Atoi(paramId)
-	if err != nil {
-		return NewServerError(err, "Unable to parse parameter 'id' from actual parameter '"+paramId+"'.", c.FullPath(), http.StatusBadRequest)
-	}
-
-	if err := h.repository.DeleteById(int64(id)); err != nil {
+	if err := h.repository.DeleteById(paramId); err != nil {
 		return NewServerError(err, "Unable to delete note with id '"+paramId+"'.", c.FullPath(), http.StatusInternalServerError)
 	}
 	c.IndentedJSON(http.StatusOK, gin.H{"message": "Note with id '" + paramId + "' deleted."})

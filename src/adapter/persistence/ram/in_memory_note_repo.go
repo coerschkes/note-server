@@ -1,4 +1,4 @@
-package persistence
+package ram
 
 import (
 	"co/note-server/src/domain/model"

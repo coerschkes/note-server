@@ -27,7 +27,7 @@ func (r InMemoryNoteRepository) GetById(id string) (model.Note, error) {
 			return note, nil
 		}
 	}
-	return model.Note{ID: "-1"}, errors.New("Note with id '" + id + "' not found")
+	return model.MakeInvalidNote(), errors.New("Note with id '" + id + "' not found")
 }
 
 func (r InMemoryNoteRepository) Add(note model.Note) error {

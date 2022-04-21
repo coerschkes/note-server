@@ -7,4 +7,4 @@ fi
 
 curl -v http://localhost:8080/notes --include \
  --header "Content-Type: application/json" \
- --data '{"id": "'$1'", "title": "'$2'", "content": "'$3'"}'
+ --data "{\"id\": \"$1\", \"title\": \"$2\", \"content\": \"$3\"}"

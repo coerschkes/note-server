@@ -1,12 +1,12 @@
 package main
 
 import (
-	"co/note-server/src/network"
-	"co/note-server/src/note"
+	"co/note-server/src/adapter/api"
+	"co/note-server/src/adapter/persistence"
 )
 
 func main() {
-	var server network.NoteServer = network.NewHttpHandler(note.MakeInMemoryNoteRepository())
+	var server api.NoteServer = api.NewNoteController(persistence.MakeInMemoryNoteRepository())
 
-	server.Init()
+	server.InitServer()
 }

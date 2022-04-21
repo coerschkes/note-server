@@ -1,9 +1,9 @@
-package network
+package api
 
 import "github.com/gin-gonic/gin"
 
 type NoteServer interface {
-	Init()
+	InitServer()
 	GetNotes(c *gin.Context) *ServerError
 	GetNoteById(c *gin.Context) *ServerError
 	PostNote(c *gin.Context) *ServerError

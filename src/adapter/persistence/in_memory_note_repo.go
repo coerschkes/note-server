@@ -1,36 +1,37 @@
-package note
+package persistence
 
 import (
+	"co/note-server/src/domain/model"
 	"errors"
 	"strconv"
 )
 
 type InMemoryNoteRepository struct {
-	notes *[]Note
+	notes *[]model.Note
 }
 
 func MakeInMemoryNoteRepository() InMemoryNoteRepository {
-	var notes = []Note{
+	var notes = []model.Note{
 		{ID: 1, Title: "Test", Content: "This is a test."},
 		{ID: 2, Title: "Test2", Content: "This is the second test."},
 	}
 	return InMemoryNoteRepository{notes: &notes}
 }
 
-func (r InMemoryNoteRepository) GetAll() ([]Note, error) {
+func (r InMemoryNoteRepository) GetAll() ([]model.Note, error) {
 	return *r.notes, nil
 }
 
-func (r InMemoryNoteRepository) GetById(id int64) (Note, error) {
+func (r InMemoryNoteRepository) GetById(id int64) (model.Note, error) {
 	for _, note := range *r.notes {
 		if note.ID == id {
 			return note, nil
 		}
 	}
-	return Note{ID: -1}, errors.New("Note with id '" + strconv.Itoa(int(id)) + "' not found")
+	return model.Note{ID: -1}, errors.New("Note with id '" + strconv.Itoa(int(id)) + "' not found")
 }
 
-func (r InMemoryNoteRepository) Add(note Note) error {
+func (r InMemoryNoteRepository) Add(note model.Note) error {
 	*r.notes = append(*r.notes, note)
 	return nil
 }

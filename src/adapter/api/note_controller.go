@@ -1,7 +1,7 @@
-package network
+package api
 
 import (
-	"co/note-server/src/note"
+	"co/note-server/src/domain/model"
 	"net/http"
 	"strconv"
 
@@ -10,27 +10,27 @@ import (
 
 const trustedProxies = "127.0.0.1"
 
-type HttpHandler struct {
-	repository note.NoteRepository
+type NoteController struct {
+	repository model.NoteRepository
 }
 
-func NewHttpHandler(repository note.NoteRepository) HttpHandler {
-	return HttpHandler{repository: repository}
+func NewNoteController(repository model.NoteRepository) NoteController {
+	return NoteController{repository: repository}
 }
 
-func (h HttpHandler) Init() {
+func (h NoteController) InitServer() {
 	router := gin.New()
 	router.Use(gin.Logger())
 	router.SetTrustedProxies([]string{trustedProxies})
-	router.GET("/notes", errorHandler(h.GetNotes).handleHttp)
-	router.GET("/notes/:id", errorHandler(h.GetNoteById).handleHttp)
-	router.POST("/notes", errorHandler(h.PostNote).handleHttp)
-	router.DELETE("/notes/:id", errorHandler(h.DeleteNote).handleHttp)
+	router.GET("/notes", errorHandler(h.GetNotes).handleRequest)
+	router.GET("/notes/:id", errorHandler(h.GetNoteById).handleRequest)
+	router.POST("/notes", errorHandler(h.PostNote).handleRequest)
+	router.DELETE("/notes/:id", errorHandler(h.DeleteNote).handleRequest)
 
 	router.Run("localhost:8080")
 }
 
-func (h HttpHandler) GetNotes(c *gin.Context) *ServerError {
+func (h NoteController) GetNotes(c *gin.Context) *ServerError {
 	if note, err := h.repository.GetAll(); err != nil {
 		return NewServerError(err, "Unable to get notes from the repository.", c.FullPath(), http.StatusInternalServerError)
 	} else {
@@ -39,7 +39,7 @@ func (h HttpHandler) GetNotes(c *gin.Context) *ServerError {
 	}
 }
 
-func (h HttpHandler) GetNoteById(c *gin.Context) *ServerError {
+func (h NoteController) GetNoteById(c *gin.Context) *ServerError {
 	paramId := c.Param("id")
 	id, err := strconv.Atoi(paramId)
 	if err != nil {
@@ -54,8 +54,8 @@ func (h HttpHandler) GetNoteById(c *gin.Context) *ServerError {
 	}
 }
 
-func (h HttpHandler) PostNote(c *gin.Context) *ServerError {
-	var newNote note.Note
+func (h NoteController) PostNote(c *gin.Context) *ServerError {
+	var newNote model.Note
 
 	if err := c.BindJSON(&newNote); err != nil {
 		return NewServerError(err, "Unable to create note from provided json.", c.FullPath(), http.StatusBadRequest)
@@ -69,7 +69,7 @@ func (h HttpHandler) PostNote(c *gin.Context) *ServerError {
 	}
 }
 
-func (h HttpHandler) DeleteNote(c *gin.Context) *ServerError {
+func (h NoteController) DeleteNote(c *gin.Context) *ServerError {
 	paramId := c.Param("id")
 	id, err := strconv.Atoi(paramId)
 	if err != nil {

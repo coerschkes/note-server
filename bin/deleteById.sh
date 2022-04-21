@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$#" -ne 1 ]; then
-    echo "Missing parameter id"
+    echo <&2 "useage: $(basename $0) id"
     exit
 fi
 

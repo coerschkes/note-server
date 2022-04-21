@@ -17,6 +17,6 @@ type ServerError struct {
 	Code    int
 }
 
-func NewServerError(err error, msg string, path string, code int) *ServerError {
-	return &ServerError{Error: err, Message: msg, Path: path, Code: code}
+func NewServerError(err error, path string, code int) *ServerError {
+	return &ServerError{Error: err, Message: err.Error(), Path: path, Code: code}
 }

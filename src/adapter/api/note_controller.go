@@ -31,7 +31,7 @@ func (h NoteController) InitServer() {
 
 func (h NoteController) GetNotes(c *gin.Context) *ServerError {
 	if note, err := h.repository.GetAll(); err != nil {
-		return NewServerError(err, "Unable to get notes from the repository.", c.FullPath(), http.StatusInternalServerError)
+		return NewServerError(err, c.FullPath(), http.StatusInternalServerError)
 	} else {
 		c.IndentedJSON(http.StatusOK, note)
 		return nil
@@ -41,7 +41,7 @@ func (h NoteController) GetNotes(c *gin.Context) *ServerError {
 func (h NoteController) GetNoteById(c *gin.Context) *ServerError {
 	paramId := c.Param("id")
 	if note, err := h.repository.GetById(paramId); err != nil {
-		return NewServerError(err, "Unable to find note with id '"+paramId+"' from the repository.", c.FullPath(), http.StatusBadRequest)
+		return NewServerError(err, c.FullPath(), http.StatusBadRequest)
 	} else {
 		c.IndentedJSON(http.StatusOK, note)
 		return nil
@@ -52,11 +52,11 @@ func (h NoteController) PostNote(c *gin.Context) *ServerError {
 	var newNote model.Note
 
 	if err := c.BindJSON(&newNote); err != nil {
-		return NewServerError(err, "Unable to create note from provided json.", c.FullPath(), http.StatusBadRequest)
+		return NewServerError(err, c.FullPath(), http.StatusBadRequest)
 	}
 
 	if err := h.repository.Add(newNote); err != nil {
-		return NewServerError(err, "Unable to save the provided note.", c.FullPath(), http.StatusInternalServerError)
+		return NewServerError(err, c.FullPath(), http.StatusInternalServerError)
 	} else {
 		c.IndentedJSON(http.StatusCreated, newNote)
 		return nil
@@ -66,7 +66,7 @@ func (h NoteController) PostNote(c *gin.Context) *ServerError {
 func (h NoteController) DeleteNote(c *gin.Context) *ServerError {
 	paramId := c.Param("id")
 	if err := h.repository.DeleteById(paramId); err != nil {
-		return NewServerError(err, "Unable to delete note with id '"+paramId+"'.", c.FullPath(), http.StatusInternalServerError)
+		return NewServerError(err, c.FullPath(), http.StatusInternalServerError)
 	}
 	c.IndentedJSON(http.StatusOK, gin.H{"message": "Note with id '" + paramId + "' deleted."})
 	return nil

@@ -31,8 +31,12 @@ func (r InMemoryNoteRepository) GetById(id string) (model.Note, error) {
 }
 
 func (r InMemoryNoteRepository) Add(note model.Note) error {
-	*r.notes = append(*r.notes, note)
-	return nil
+	if n, _ := r.GetById(note.ID); n.ID == model.MakeInvalidNote().ID {
+		*r.notes = append(*r.notes, note)
+		return nil
+	} else {
+		return errors.New("Note with id '" + note.ID + "' already exists.")
+	}
 }
 
 func (r InMemoryNoteRepository) DeleteById(id string) error {

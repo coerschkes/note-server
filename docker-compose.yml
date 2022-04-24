@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  note-server:
+    image: note-server:v1
+    container_name: note-server
+    ports: 
+      - "8080:8080"
+    networks:
+      - proxynet
+
+  note-db:
+    image: "redis:alpine"
+    container_name: note-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - proxynet
+
+networks:
+  proxynet:
+    name: note-network

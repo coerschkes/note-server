@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const trustedProxies = "127.0.0.1"
+const trustedProxies = "0.0.0.0"
 
 type NoteController struct {
 	repository model.NoteRepository
@@ -26,7 +26,7 @@ func (h NoteController) InitServer() {
 	router.POST("/notes", errorHandler(h.PostNote).handleRequest)
 	router.DELETE("/notes/:id", errorHandler(h.DeleteNote).handleRequest)
 
-	router.Run("localhost:8080")
+	router.Run("0.0.0.0:8080")
 }
 
 func (h NoteController) GetNotes(c *gin.Context) *ServerError {

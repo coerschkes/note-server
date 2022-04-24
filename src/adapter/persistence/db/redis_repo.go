@@ -7,7 +7,7 @@ import (
 	"github.com/go-redis/redis"
 )
 
-const databaseAddress = "localhost:6379"
+const databaseAddress = "note-redis:6379"
 
 type RedisRepository struct {
 	rdb *redis.Client

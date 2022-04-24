@@ -1,4 +1,4 @@
-package ram
+package db
 
 import (
 	"co/note-server/src/domain/model"
@@ -6,10 +6,9 @@ import (
 	"sync"
 )
 
-var lock sync.Mutex
-
 type InMemoryNoteRepository struct {
 	notes *[]model.Note
+	lock  *sync.Mutex
 }
 
 func MakeInMemoryNoteRepository() InMemoryNoteRepository {
@@ -17,7 +16,7 @@ func MakeInMemoryNoteRepository() InMemoryNoteRepository {
 		{ID: "1", Title: "Test", Content: "This is a test."},
 		{ID: "2", Title: "Test2", Content: "This is the second test."},
 	}
-	return InMemoryNoteRepository{notes: &notes}
+	return InMemoryNoteRepository{notes: &notes, lock: &sync.Mutex{}}
 }
 
 func (r InMemoryNoteRepository) GetAll() ([]model.Note, error) {
@@ -34,8 +33,8 @@ func (r InMemoryNoteRepository) GetById(id string) (model.Note, error) {
 }
 
 func (r InMemoryNoteRepository) Add(note model.Note) error {
-	lock.Lock()
-	defer lock.Unlock()
+	r.lock.Lock()
+	defer r.lock.Unlock()
 	if n, _ := r.GetById(note.ID); n.ID == model.MakeInvalidNote().ID {
 		*r.notes = append(*r.notes, note)
 		return nil
@@ -45,8 +44,8 @@ func (r InMemoryNoteRepository) Add(note model.Note) error {
 }
 
 func (r InMemoryNoteRepository) DeleteById(id string) error {
-	lock.Lock()
-	defer lock.Unlock()
+	r.lock.Lock()
+	defer r.lock.Unlock()
 	for i, note := range *r.notes {
 		if note.ID == id {
 			*r.notes = append((*r.notes)[:i], (*r.notes)[i+1:]...)

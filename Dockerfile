@@ -5,11 +5,12 @@ WORKDIR /server
 
 EXPOSE 8080
 
-COPY ./src/ /server/src/
 COPY go.mod go.sum ./
 RUN go mod download 
 RUN go mod verify
-RUN go build -v -o note-server ./src
-RUN ls -la ./src
+COPY ./src/ /server/src/
+COPY ./resources/ /server/resources/
+RUN go build -v -o ./src/note-server ./src
+WORKDIR /server/src
 
 CMD ["./note-server"]

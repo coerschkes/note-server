@@ -1,32 +1,37 @@
 package api
 
 import (
+	"co/note-server/src/config"
 	"co/note-server/src/domain/model"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
-const trustedProxies = "0.0.0.0"
-
 type NoteController struct {
 	repository model.NoteRepository
+	properties config.ConfigProvider
 }
 
 func NewNoteController(repository model.NoteRepository) NoteController {
-	return NoteController{repository: repository}
+	return NoteController{repository: repository, properties: config.MakeConfigProvider()}
 }
 
 func (h NoteController) InitServer() {
+	host := h.properties.GetProperty("server.host")
+	port := h.properties.GetProperty("server.port")
+	trustedProxies := h.properties.GetProperty("server.trusted.proxies")
+
 	router := gin.New()
 	router.Use(gin.Logger())
-	router.SetTrustedProxies([]string{trustedProxies})
+	router.SetTrustedProxies(strings.Split(trustedProxies, ","))
 	router.GET("/notes", errorHandler(h.GetNotes).handleRequest)
 	router.GET("/notes/:id", errorHandler(h.GetNoteById).handleRequest)
 	router.POST("/notes", errorHandler(h.PostNote).handleRequest)
 	router.DELETE("/notes/:id", errorHandler(h.DeleteNote).handleRequest)
 
-	router.Run("0.0.0.0:8080")
+	router.Run(host + ":" + port)
 }
 
 func (h NoteController) GetNotes(c *gin.Context) *ServerError {

@@ -3,7 +3,10 @@ package ram
 import (
 	"co/note-server/src/domain/model"
 	"errors"
+	"sync"
 )
+
+var lock sync.Mutex
 
 type InMemoryNoteRepository struct {
 	notes *[]model.Note
@@ -31,6 +34,8 @@ func (r InMemoryNoteRepository) GetById(id string) (model.Note, error) {
 }
 
 func (r InMemoryNoteRepository) Add(note model.Note) error {
+	lock.Lock()
+	defer lock.Unlock()
 	if n, _ := r.GetById(note.ID); n.ID == model.MakeInvalidNote().ID {
 		*r.notes = append(*r.notes, note)
 		return nil
@@ -40,6 +45,8 @@ func (r InMemoryNoteRepository) Add(note model.Note) error {
 }
 
 func (r InMemoryNoteRepository) DeleteById(id string) error {
+	lock.Lock()
+	defer lock.Unlock()
 	for i, note := range *r.notes {
 		if note.ID == id {
 			*r.notes = append((*r.notes)[:i], (*r.notes)[i+1:]...)

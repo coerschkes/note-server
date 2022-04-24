@@ -3,11 +3,14 @@ package db
 import (
 	"co/note-server/src/domain/model"
 	"errors"
+	"sync"
 
 	"github.com/go-redis/redis"
 )
 
 const databaseAddress = "note-redis:6379"
+
+var lock sync.Mutex
 
 type RedisRepository struct {
 	rdb *redis.Client
@@ -49,6 +52,8 @@ func (r RedisRepository) GetById(id string) (model.Note, error) {
 }
 
 func (r RedisRepository) Add(note model.Note) error {
+	lock.Lock()
+	defer lock.Unlock()
 	if jsn, err := note.ToJson(); err != nil {
 		return err
 	} else {
@@ -60,6 +65,8 @@ func (r RedisRepository) Add(note model.Note) error {
 }
 
 func (r RedisRepository) DeleteById(id string) error {
+	lock.Lock()
+	defer lock.Unlock()
 	if r.noteExists(id) {
 		return r.rdb.Del(id).Err()
 	} else {

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"co/note-server/src/adapter/api"
-	"co/note-server/src/adapter/persistence/db"
+	"co/note-server/src/main/adapter/api"
+	"co/note-server/src/main/adapter/persistence/db"
 )
 
 func main() {

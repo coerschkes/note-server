@@ -1,7 +1,7 @@
 package db
 
 import (
-	"co/note-server/src/domain/model"
+	"co/note-server/src/main/domain/model"
 	"errors"
 	"sync"
 )

@@ -9,7 +9,7 @@ type ConfigProvider struct {
 }
 
 func MakeConfigProvider() ConfigProvider {
-	return ConfigProvider{properties: properties.MustLoadFile("../resources/server.properties", properties.UTF8)}
+	return ConfigProvider{properties: properties.MustLoadFile("resources/server.properties", properties.UTF8)}
 }
 
 func (p ConfigProvider) GetProperty(propertyKey string) string {

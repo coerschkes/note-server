@@ -1,8 +1,8 @@
 package db
 
 import (
-	"co/note-server/src/config"
-	"co/note-server/src/domain/model"
+	"co/note-server/src/main/config"
+	"co/note-server/src/main/domain/model"
 	"errors"
 	"sync"
 

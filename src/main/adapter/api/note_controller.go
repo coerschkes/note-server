@@ -61,7 +61,7 @@ func (h NoteController) PostNote(c *gin.Context) *ServerError {
 	}
 
 	if err := h.repository.Add(newNote); err != nil {
-		return NewServerError(err, c.FullPath(), http.StatusInternalServerError)
+		return NewServerError(err, c.FullPath(), http.StatusBadRequest)
 	} else {
 		c.IndentedJSON(http.StatusCreated, newNote)
 		return nil
@@ -71,7 +71,7 @@ func (h NoteController) PostNote(c *gin.Context) *ServerError {
 func (h NoteController) DeleteNote(c *gin.Context) *ServerError {
 	paramId := c.Param("id")
 	if err := h.repository.DeleteById(paramId); err != nil {
-		return NewServerError(err, c.FullPath(), http.StatusInternalServerError)
+		return NewServerError(err, c.FullPath(), http.StatusBadRequest)
 	}
 	c.IndentedJSON(http.StatusOK, gin.H{"message": "Note with id '" + paramId + "' deleted."})
 	return nil

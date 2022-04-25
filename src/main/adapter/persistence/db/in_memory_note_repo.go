@@ -12,10 +12,7 @@ type InMemoryNoteRepository struct {
 }
 
 func MakeInMemoryNoteRepository() InMemoryNoteRepository {
-	var notes = []model.Note{
-		{ID: "1", Title: "Test", Content: "This is a test."},
-		{ID: "2", Title: "Test2", Content: "This is the second test."},
-	}
+	var notes = []model.Note{}
 	return InMemoryNoteRepository{notes: &notes, lock: &sync.Mutex{}}
 }
 
